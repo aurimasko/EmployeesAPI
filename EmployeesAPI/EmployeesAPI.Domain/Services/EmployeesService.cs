@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EmployeesAPI.Domain.Common;
 using EmployeesAPI.Domain.Configuration;
@@ -18,20 +19,14 @@ namespace EmployeesAPI.Domain.Services
             _repository = repository;
         }
 
-
-        public async Task<Response<Employee>> GetAsync(Guid id)
-        {
-            return await _repository.GetAsync(id);
-        }
-
         public async Task<Response<IEnumerable<Employee>>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
         }
 
-        public async Task<Response<IEnumerable<Employee>>> GetByParameterAsync()
+        public async Task<Response<IEnumerable<Employee>>> GetByParameterAsync(Expression<Func<Employee, bool>> searchCriteria)
         {
-            return await _repository.GetByParameterAsync(e => e.Role == RoleTypes.Employee);
+            return await _repository.GetByParameterAsync(searchCriteria);
         }
 
 

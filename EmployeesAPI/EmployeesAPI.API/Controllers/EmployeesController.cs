@@ -32,7 +32,7 @@ namespace EmployeesAPI.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var result = await _service.GetAsync(id);
+            var result = await _service.GetByParameterAsync(e => e.Id.Equals(id));
 
             if (result.IsSuccess)
                 return Ok(result);
@@ -43,7 +43,7 @@ namespace EmployeesAPI.API.Controllers
         [HttpGet("{name}")]
         public async Task<IActionResult> Get(String Name, DateTime birthDateFrom, DateTime birthDateTo)
         {
-            var result = await _service.GetByParameterAsync();
+            var result = await _service.GetByParameterAsync(e => e.FirstName.Equals(Name));
 
             if (result.IsSuccess)
                 return Ok(result);
@@ -52,10 +52,10 @@ namespace EmployeesAPI.API.Controllers
         }
 
         // change routing
-        [HttpGet("{bossId}")]
+        [HttpGet("Boss/{bossId}")]
         public async Task<IActionResult> GetByBoss(Guid bossId)
         {
-            var result = await _service.GetByParameterAsync();
+            var result = await _service.GetByParameterAsync(e => e.BossId == bossId);
 
             if (result.IsSuccess)
                 return Ok(result);
@@ -67,7 +67,7 @@ namespace EmployeesAPI.API.Controllers
         [HttpGet("{role}")]
         public async Task<IActionResult> GetCount(RoleTypes role)
         {
-            var result = await _service.GetByParameterAsync();
+            var result = await _service.GetByParameterAsync(e => e.Role == role);
 
             if (result.IsSuccess)
                 return Ok(result);
