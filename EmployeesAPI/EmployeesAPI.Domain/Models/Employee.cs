@@ -44,6 +44,9 @@ namespace EmployeesAPI.Domain.Models
 
         public Guid? BossId { get; set; }
 
+        //For tracking concurrency changes
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         public int GetAge()
         {

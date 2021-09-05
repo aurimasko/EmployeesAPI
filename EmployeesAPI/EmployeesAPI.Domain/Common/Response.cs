@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using EmployeesAPI.Domain.Configuration;
+using Newtonsoft.Json;
 
 namespace EmployeesAPI.Domain.Common
 {
     public class Response
     {
-
-
         protected Response()
         {
             ErrorMessages = new List<string>();
@@ -54,6 +52,11 @@ namespace EmployeesAPI.Domain.Common
 
         [JsonIgnore]
         public Exception InnerException { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 
     public class Response<T> : Response
@@ -70,6 +73,19 @@ namespace EmployeesAPI.Domain.Common
 
         public Response(Exception innerException, IEnumerable<string> errorMessages, IEnumerable<ErrorCodeTypes> errorCodesEnums) : base(innerException, errorMessages, errorCodesEnums)
         {
+        }
+
+        public Response(string errorMessage, ErrorCodeTypes errorCode) : base(errorMessage, errorCode)
+        {
+        }
+
+        public Response(IEnumerable<string> errorMessages) : base(errorMessages)
+        {
+        }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
         }
     }
 }
