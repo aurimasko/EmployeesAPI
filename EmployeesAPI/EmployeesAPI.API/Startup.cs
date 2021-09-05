@@ -15,6 +15,8 @@ using EmployeesAPI.Infrastructure;
 using EmployeesAPI.Domain.Interfaces;
 using EmployeesAPI.Infrastructure.Repositories;
 using EmployeesAPI.Domain.Services;
+using EmployeesAPI.Infrastructure.Middlewares;
+using EmployeesAPI.Infrastructure.Logger;
 
 namespace EmployeesAPI
 {
@@ -46,6 +48,7 @@ namespace EmployeesAPI
 
             services.AddScoped<IEmployeesRepository, EmployeesRepository>();
             services.AddScoped<IEmployeesService, EmployeesService>();
+            services.AddScoped<ILoggerService, LoggerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,6 +64,8 @@ namespace EmployeesAPI
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.ConfigureExceptionHandler();
 
             app.UseEndpoints(endpoints =>
             {

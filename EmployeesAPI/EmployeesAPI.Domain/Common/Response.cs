@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using EmployeesAPI.Domain.Configuration;
+using Newtonsoft.Json;
 
 namespace EmployeesAPI.Domain.Common
 {
@@ -54,6 +54,11 @@ namespace EmployeesAPI.Domain.Common
 
         [JsonIgnore]
         public Exception InnerException { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 
     public class Response<T> : Response
@@ -74,6 +79,11 @@ namespace EmployeesAPI.Domain.Common
 
         public Response(string errorMessage, ErrorCodeTypes errorCode) : base(errorMessage, errorCode)
         {
+        }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
         }
     }
 }
