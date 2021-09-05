@@ -1,5 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using EmployeesAPI.API.DTO;
+using EmployeesAPI.API.Extensions;
+using EmployeesAPI.Domain.Common;
 using EmployeesAPI.Domain.Configuration;
 using EmployeesAPI.Domain.Interfaces;
 using EmployeesAPI.Domain.Models;
@@ -12,62 +18,69 @@ namespace EmployeesAPI.API.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeesService _service;
+        private readonly IMapper _mapper;
 
-        public EmployeesController(IEmployeesService service)
+        public EmployeesController(IEmployeesService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             var result = await _service.GetAllAsync();
+            var mappedResult = _mapper.ToDTO<EmployeeDTO, Employee>(result);
 
-            if (result.IsSuccess)
-                return Ok(result);
+            if (mappedResult.IsSuccess)
+                return Ok(mappedResult);
             else
-                return BadRequest(result);
+                return BadRequest(mappedResult);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             var result = await _service.GetAsync(id);
+            var mappedResult = _mapper.ToDTO<EmployeeDTO, Employee>(result);
 
-            if (result.IsSuccess)
-                return Ok(result);
+            if (mappedResult.IsSuccess)
+                return Ok(mappedResult);
             else
-                return BadRequest(result);
+                return BadRequest(mappedResult);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get(String Name, DateTime birthDateFrom, DateTime birthDateTo)
+        [HttpGet("Search/")]
+        public async Task<IActionResult> Get(string name, DateTime? birthDateFrom, DateTime? birthDateTo)
         {
-            var result = await _service.GetByParameterAsync();
+            DateTime bdFrom = birthDateFrom ?? DateTime.MinValue;
+            DateTime bdTo = birthDateTo ?? DateTime.MaxValue;
 
-            if (result.IsSuccess)
-                return Ok(result);
+            var result = await _service.GetByParameterAsync(e => (e.FirstName.Equals(name) || name == String.Empty) && e.BirthDate >= bdFrom.Date && e.BirthDate <= bdTo.Date);
+            var mappedResult = _mapper.ToDTO<EmployeeDTO, Employee>(result);
+
+            if (mappedResult.IsSuccess)
+                return Ok(mappedResult);
             else
-                return BadRequest(result);
+                return BadRequest(mappedResult);
         }
 
-        // change routing
-        [HttpGet]
+        [HttpGet("Boss/{bossId}")]
         public async Task<IActionResult> GetByBoss(Guid bossId)
         {
-            var result = await _service.GetByParameterAsync();
+            var result = await _service.GetByParameterAsync(e => e.BossId == bossId);
+            var mappedResult = _mapper.ToDTO<EmployeeDTO, Employee>(result);
 
-            if (result.IsSuccess)
-                return Ok(result);
+            if (mappedResult.IsSuccess)
+                return Ok(mappedResult);
             else
-                return BadRequest(result);
+                return BadRequest(mappedResult);
         }
 
-        // not working yet
-        [HttpGet]
-        public async Task<IActionResult> GetCount(RoleTypes role)
+        [HttpGet("Role/{role}/Statistics")]
+        public async Task<IActionResult> GetStatistics(RoleTypes role)
         {
-            var result = await _service.GetByParameterAsync();
+            var result = await _service.GetStatisticsAsync(role);
 
             if (result.IsSuccess)
                 return Ok(result);
@@ -76,48 +89,53 @@ namespace EmployeesAPI.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Employee employee)
+        public async Task<IActionResult> Post([FromBody]EmployeeDTO employee)
         {
-            var result = await _service.AddAsync(employee);
+            var mappedEmployee = _mapper.Map<Employee>(employee);
+            var result = await _service.AddAsync(mappedEmployee);
+            var mappedResult = _mapper.ToDTO<EmployeeDTO, Employee>(result);
 
-            if (result.IsSuccess)
-                return Ok(result);
+            if (mappedResult.IsSuccess)
+                return Ok(mappedResult);
             else
-                return BadRequest(result);
+                return BadRequest(mappedResult);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] Employee employee)
+        public async Task<IActionResult> Put([FromBody] EmployeeDTO employee)
         {
-            var result = await _service.UpdateAsync(employee);
+            var mappedEmployee = _mapper.Map<Employee>(employee);
+            var result = await _service.UpdateAsync(mappedEmployee);
+            var mappedResult = _mapper.ToDTO<EmployeeDTO, Employee>(result);
 
-            if (result.IsSuccess)
-                return Ok(result);
+            if (mappedResult.IsSuccess)
+                return Ok(mappedResult);
             else
-                return BadRequest(result);
+                return BadRequest(mappedResult);
         }
 
-        // change employee to Id, Salary.
-        [HttpPut]
-        public async Task<IActionResult> PutSalary([FromBody]Employee employee)
+        [HttpPut("{id}/Salary/{newSalary}")]
+        public async Task<IActionResult> PutSalary(Guid id, int newSalary)
         {
-            var result = await _service.UpdateSalaryAsync(employee);
+            var result = await _service.UpdateSalaryAsync(id, newSalary);
+            var mappedResult = _mapper.ToDTO<EmployeeDTO, Employee>(result);
 
-            if (result.IsSuccess)
-                return Ok(result);
+            if (mappedResult.IsSuccess)
+                return Ok(mappedResult);
             else
-                return BadRequest(result);
+                return BadRequest(mappedResult);
         }
 
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery]Guid id)
         {
             var result = await _service.DeleteAsync(id);
+            var mappedResult = _mapper.ToDTO<EmployeeDTO, Employee>(result);
 
-            if (result.IsSuccess)
-                return Ok(result);
+            if (mappedResult.IsSuccess)
+                return Ok(mappedResult);
             else
-                return BadRequest(result);
+                return BadRequest(mappedResult);
         }
     }
 }

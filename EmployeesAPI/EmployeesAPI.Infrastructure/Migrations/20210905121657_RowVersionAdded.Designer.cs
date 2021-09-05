@@ -3,14 +3,16 @@ using System;
 using EmployeesAPI.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EmployeesAPI.Infrastructure.Migrations
 {
     [DbContext(typeof(EmployeesDbContext))]
-    partial class EmployeesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210905121657_RowVersionAdded")]
+    partial class RowVersionAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,45 +64,6 @@ namespace EmployeesAPI.Infrastructure.Migrations
                     b.HasIndex("BossId");
 
                     b.ToTable("Employees");
-                });
-
-            modelBuilder.Entity("EmployeesAPI.Infrastructure.Logger.Error", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("RequestBody")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("RequestContentType")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("RequestHttpHeaders")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("RequestMethod")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("RequestQueryStrings")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("RequestUrl")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("StackTrace")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Errors");
                 });
 
             modelBuilder.Entity("EmployeesAPI.Domain.Models.Employee", b =>

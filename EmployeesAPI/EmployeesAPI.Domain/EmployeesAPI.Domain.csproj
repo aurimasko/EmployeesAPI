@@ -9,11 +9,17 @@
     <None Remove="Configuration\" />
     <None Remove="Interfaces\" />
     <None Remove="Common\" />
+    <None Remove="Services\" />
+    <None Remove="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="Configuration\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Common\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
   </ItemGroup>
 </Project>

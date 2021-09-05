@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using EmployeesAPI.Domain.Configuration;
+using Newtonsoft.Json;
 
 namespace EmployeesAPI.Domain.Common
 {
     public class Response
     {
-
-
         protected Response()
         {
             ErrorMessages = new List<string>();
             ErrorCodes = new List<ErrorCodeTypes>();
         }
 
-        public Response(bool isSuccess)
+        public Response(bool isSuccess) : this()
         {
             IsSuccess = isSuccess;
         }
@@ -40,18 +40,52 @@ namespace EmployeesAPI.Domain.Common
             ErrorCodes.Add(ErrorCodeTypes.GenericError);
         }
 
+        public Response(Exception innerException, IEnumerable<string> errorMessages, IEnumerable<ErrorCodeTypes> errorCodesEnums) : this(errorMessages, errorCodesEnums)
+        {
+            InnerException = innerException;
+        }
+
+
         public bool IsSuccess { get; set; }
         public List<ErrorCodeTypes> ErrorCodes { get; set; }
         public List<string> ErrorMessages { get; set; }
 
+        [JsonIgnore]
+        public Exception InnerException { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 
     public class Response<T> : Response
     {
         public T Content { get; set; }
 
-        public Response() { }
+        public Response() : base () { }
         public Response(bool isSuccess) : base(isSuccess) { }
         public Response(T content) : base(true) { Content = content; }
+
+        public Response(string errorMessage) : base(errorMessage)
+        {
+        }
+
+        public Response(Exception innerException, IEnumerable<string> errorMessages, IEnumerable<ErrorCodeTypes> errorCodesEnums) : base(innerException, errorMessages, errorCodesEnums)
+        {
+        }
+
+        public Response(string errorMessage, ErrorCodeTypes errorCode) : base(errorMessage, errorCode)
+        {
+        }
+
+        public Response(IEnumerable<string> errorMessages) : base(errorMessages)
+        {
+        }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 }

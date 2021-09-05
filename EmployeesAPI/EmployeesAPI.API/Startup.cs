@@ -12,6 +12,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using EmployeesAPI.Infrastructure;
+using EmployeesAPI.Domain.Interfaces;
+using EmployeesAPI.Infrastructure.Repositories;
+using EmployeesAPI.Domain.Services;
+using EmployeesAPI.Infrastructure.Middlewares;
+using EmployeesAPI.Infrastructure.Logger;
+using AutoMapper;
+using EmployeesAPI.API;
+using EmployeesAPI.Domain.Common;
+using EmployeesAPI.Domain.Configuration;
 
 namespace EmployeesAPI
 {
@@ -27,7 +36,24 @@ namespace EmployeesAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    //serialize enums as strings not integers
+                    options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                });
+
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllRequests", builder =>
+                {
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
 
             services.AddDbContext<EmployeesDbContext>(options =>
             {
@@ -38,6 +64,43 @@ namespace EmployeesAPI
                         settings.EnableRetryOnFailure();
                     }).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
+
+           
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                //Return custom model state validation results
+                options.InvalidModelStateResponseFactory = (context) =>
+                {
+                    var modelState = context.ModelState;
+
+                    var listOfErrorMessages = new List<string>();
+
+                    foreach (var keyModelStatePair in modelState)
+                    {
+                        var key = keyModelStatePair.Key;
+                        var errors = keyModelStatePair.Value.Errors;
+
+                        if (errors != null && errors.Count > 0)
+                        {
+                            foreach (var error in errors)
+                            {
+                                if (!string.IsNullOrEmpty(error.ErrorMessage))
+                                    listOfErrorMessages.Add(error.ErrorMessage);
+                            }
+                        }
+                    }
+
+                    var response = new Response(listOfErrorMessages, new List<ErrorCodeTypes>() { ErrorCodeTypes.ValidationErrors });
+                    return new BadRequestObjectResult(response);
+                };
+            });
+
+            services.AddSwaggerGen();
+            services.AddAutoMapper(typeof(MappingProfile));
+
+            services.AddScoped<IEmployeesRepository, EmployeesRepository>();
+            services.AddScoped<IEmployeesService, EmployeesService>();
+            services.AddScoped<ILoggerService, LoggerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,16 +111,23 @@ namespace EmployeesAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("AllowAllRequests");
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
 
+            app.ConfigureExceptionHandler();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", ""); });
         }
     }
 }
