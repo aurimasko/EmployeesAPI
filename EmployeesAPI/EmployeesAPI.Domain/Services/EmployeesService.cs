@@ -29,7 +29,22 @@ namespace EmployeesAPI.Domain.Services
             return await _repository.GetByParameterAsync(searchCriteria);
         }
 
+        public async Task<Response<EmployeesAnalysis>> GetStatisticsAsync(RoleTypes role)
+        {
+            var employees = await GetByParameterAsync(e => e.Role == role);
 
+            if (!employees.IsSuccess)
+                return new Response<EmployeesAnalysis>(employees.InnerException, employees.ErrorMessages, employees.ErrorCodes);
+
+            var analysis = new EmployeesAnalysis
+            {
+                AverageSalary = employees.Content.Average(e => e.Salary),
+                EmployeesCount = employees.Content.Count()
+
+            };
+
+            return new Response<EmployeesAnalysis>(analysis);
+        }
         public async Task<Response<Employee>> AddAsync(Employee employee)
         {
             if (employee.FirstName.Equals(employee.LastName))
@@ -81,6 +96,7 @@ namespace EmployeesAPI.Domain.Services
 
         public async Task<Response<Employee>> DeleteAsync(Guid id)
         {
+
             return await _repository.DeleteAsync(id);
         }
 

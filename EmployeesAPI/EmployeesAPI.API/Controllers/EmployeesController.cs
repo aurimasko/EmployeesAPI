@@ -62,11 +62,10 @@ namespace EmployeesAPI.API.Controllers
                 return BadRequest(result);
         }
 
-        // not working yet
-        [HttpGet("{role}")]
-        public async Task<IActionResult> GetCount(RoleTypes role)
+        [HttpGet("Role/{role}/Statistics")]
+        public async Task<IActionResult> GetStatistics(RoleTypes role)
         {
-            var result = await _service.GetByParameterAsync(e => e.Role == role);
+            var result = await _service.GetStatisticsAsync(role);
 
             if (result.IsSuccess)
                 return Ok(result);
