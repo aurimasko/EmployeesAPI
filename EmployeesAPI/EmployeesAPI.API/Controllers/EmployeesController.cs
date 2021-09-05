@@ -40,10 +40,10 @@ namespace EmployeesAPI.API.Controllers
                 return BadRequest(result);
         }
 
-        [HttpGet("{name}")]
+        [HttpGet("Search/{name}/{birthDateFrom}/{birthDateTo}")]
         public async Task<IActionResult> Get(String Name, DateTime birthDateFrom, DateTime birthDateTo)
-        {
-            var result = await _service.GetByParameterAsync(e => e.FirstName.Equals(Name));
+        { 
+            var result = await _service.GetByParameterAsync(e => e.FirstName.Equals(Name) && e.BirthDate >= birthDateFrom.Date && e.BirthDate <= birthDateTo.Date);
 
             if (result.IsSuccess)
                 return Ok(result);
@@ -51,7 +51,6 @@ namespace EmployeesAPI.API.Controllers
                 return BadRequest(result);
         }
 
-        // change routing
         [HttpGet("Boss/{bossId}")]
         public async Task<IActionResult> GetByBoss(Guid bossId)
         {
