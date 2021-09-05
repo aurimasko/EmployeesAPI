@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EmployeesAPI.Domain.Common;
 using EmployeesAPI.Domain.Configuration;
 
 namespace EmployeesAPI.Domain.Models
