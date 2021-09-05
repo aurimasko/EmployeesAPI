@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EmployeesAPI.API.DTO;
@@ -49,10 +50,13 @@ namespace EmployeesAPI.API.Controllers
                 return BadRequest(mappedResult);
         }
 
-        [HttpGet("Search/{name}/{birthDateFrom}/{birthDateTo}")]
-        public async Task<IActionResult> Get(String Name, DateTime birthDateFrom, DateTime birthDateTo)
-        { 
-            var result = await _service.GetByParameterAsync(e => e.FirstName.Equals(Name) && e.BirthDate >= birthDateFrom.Date && e.BirthDate <= birthDateTo.Date);
+        [HttpGet("Search/")]
+        public async Task<IActionResult> Get(string name, DateTime? birthDateFrom, DateTime? birthDateTo)
+        {
+            DateTime bdFrom = birthDateFrom ?? DateTime.MinValue;
+            DateTime bdTo = birthDateTo ?? DateTime.MaxValue;
+
+            var result = await _service.GetByParameterAsync(e => (e.FirstName.Equals(name) || name == String.Empty) && e.BirthDate >= bdFrom.Date && e.BirthDate <= bdTo.Date);
             var mappedResult = _mapper.ToDTO<EmployeeDTO, Employee>(result);
 
             if (mappedResult.IsSuccess)
