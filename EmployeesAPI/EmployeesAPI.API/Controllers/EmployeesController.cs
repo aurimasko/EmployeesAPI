@@ -98,7 +98,7 @@ namespace EmployeesAPI.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] Employee employee)
+        public async Task<IActionResult> Put([FromBody] EmployeeDTO employee)
         {
             var mappedEmployee = _mapper.Map<Employee>(employee);
             var result = await _service.UpdateAsync(mappedEmployee);
