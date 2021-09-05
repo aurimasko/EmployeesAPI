@@ -81,6 +81,10 @@ namespace EmployeesAPI.Domain.Common
         {
         }
 
+        public Response(IEnumerable<string> errorMessages) : base(errorMessages)
+        {
+        }
+
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this);

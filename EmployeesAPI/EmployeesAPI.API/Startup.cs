@@ -17,6 +17,8 @@ using EmployeesAPI.Infrastructure.Repositories;
 using EmployeesAPI.Domain.Services;
 using EmployeesAPI.Infrastructure.Middlewares;
 using EmployeesAPI.Infrastructure.Logger;
+using AutoMapper;
+using EmployeesAPI.API;
 
 namespace EmployeesAPI
 {
@@ -34,6 +36,17 @@ namespace EmployeesAPI
         {
             services.AddControllers();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllRequests", builder =>
+                {
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
             services.AddDbContext<EmployeesDbContext>(options =>
             {
                 string connectionString = Configuration.GetConnectionString("EmployeesDatabase");
@@ -45,6 +58,7 @@ namespace EmployeesAPI
             });
 
             services.AddSwaggerGen();
+            services.AddAutoMapper(typeof(MappingProfile));
 
             services.AddScoped<IEmployeesRepository, EmployeesRepository>();
             services.AddScoped<IEmployeesService, EmployeesService>();
@@ -58,6 +72,8 @@ namespace EmployeesAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("AllowAllRequests");
 
             app.UseHttpsRedirection();
 

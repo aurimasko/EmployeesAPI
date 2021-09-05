@@ -50,47 +50,24 @@ namespace EmployeesAPI.Domain.Services
 
             return new Response<EmployeesAnalysis>(analysis);
         }
+
         public async Task<Response<Employee>> AddAsync(Employee employee)
         {
-            if (employee.FirstName.Equals(employee.LastName))
-                return new Response<Employee>("First name cannot be the same as last name.");
+            var validator = await Validate(employee);
 
-            int employeeAge = employee.GetAge();
-
-            if (employeeAge < 18)
-                return new Response<Employee>("Employee must be at least 18 years old.");
-
-            if (employeeAge > 70) 
-                return new Response<Employee>("Employee must be not older than 70 years old.");
-
-            if (employee.EmploymentDate.CompareTo(new DateTime(2000, 1, 1, 0, 0, 0)) < 0) 
-                return new Response<Employee>("Employment date cannot be earlier than 2000-01-01.");
-
-            if (employee.EmploymentDate > DateTime.Now)
-                return new Response<Employee>("Employment date cannot be in the future.");
-
-            if(employee.Salary < 0)
-                return new Response<Employee>("Current salary must be bigger than 0.");
-
-            if (employee.Role != RoleTypes.CEO && employee.BossId == Guid.Empty)
-                return new Response<Employee>("Regular employee must have boss. Please fill it.");
-
-            if (employee.Role == RoleTypes.CEO)
-            {
-                var ceoEmployee = await _repository.GetByParameterAsync(e => e.Role == RoleTypes.CEO);
-
-                if (!ceoEmployee.IsSuccess)
-                    return new Response<Employee>(ceoEmployee.InnerException, ceoEmployee.ErrorMessages, ceoEmployee.ErrorCodes);
-
-                if (ceoEmployee.Content.Count() > 0)
-                    return new Response<Employee>("Only one employee can have CEO role.");
-            }
+            if (!validator.IsSuccess)
+                return validator;
 
             return await _repository.AddAsync(employee);
         }
 
         public async Task<Response<Employee>> UpdateAsync(Employee employee)
         {
+            var validator = await Validate(employee);
+
+            if (!validator.IsSuccess)
+                return validator;
+
             return await _repository.UpdateAsync(employee);
         }
 
@@ -121,6 +98,49 @@ namespace EmployeesAPI.Domain.Services
                 return new Response<Employee>("This employee has at least one subordinate! Change boss for subordinatess first.");
 
             return await _repository.DeleteAsync(id);
+        }
+
+        private async Task<Response<Employee>> Validate(Employee employee)
+        {
+            if (employee.FirstName.Equals(employee.LastName))
+                return new Response<Employee>("First name cannot be the same as last name.");
+
+            int employeeAge = employee.GetAge();
+
+            if (employeeAge < 18)
+                return new Response<Employee>("Employee must be at least 18 years old.");
+
+            if (employeeAge > 70)
+                return new Response<Employee>("Employee must be not older than 70 years old.");
+
+            if (employee.EmploymentDate.CompareTo(new DateTime(2000, 1, 1, 0, 0, 0)) < 0)
+                return new Response<Employee>("Employment date cannot be earlier than 2000-01-01.");
+
+            if (employee.EmploymentDate > DateTime.Now)
+                return new Response<Employee>("Employment date cannot be in the future.");
+
+            if (employee.Salary < 0)
+                return new Response<Employee>("Current salary must be bigger than 0.");
+
+            if (employee.Role != RoleTypes.CEO && employee.BossId == Guid.Empty)
+                return new Response<Employee>("Regular employee must have boss. Please fill it.");
+
+            if (employee.Role == RoleTypes.CEO)
+            {
+                var ceoEmployee = await _repository.GetByParameterAsync(e => e.Role == RoleTypes.CEO && !e.Id.Equals(employee.Id));
+
+                if (!ceoEmployee.IsSuccess)
+                    return new Response<Employee>(ceoEmployee.InnerException, ceoEmployee.ErrorMessages, ceoEmployee.ErrorCodes);
+
+                if (ceoEmployee.Content.Count() > 0)
+                    return new Response<Employee>("Only one employee can have CEO role.");
+            }
+            else
+            {
+                if (employee.BossId == Guid.Empty || employee.BossId == null)
+                    return new Response<Employee>("Boss id must be filled.");
+            }
+            return new Response<Employee>(true);
         }
 
     }
