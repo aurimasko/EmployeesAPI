@@ -32,7 +32,7 @@ namespace EmployeesAPI.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var result = await _service.GetByParameterAsync(e => e.Id.Equals(id));
+            var result = await _service.GetAsync(id);
 
             if (result.IsSuccess)
                 return Ok(result);
@@ -96,10 +96,10 @@ namespace EmployeesAPI.API.Controllers
         }
 
         // change employee to Id, Salary.
-        [HttpPut("test/")]
-        public async Task<IActionResult> PutSalary([FromBody]Employee employee)
+        [HttpPut("{id}/Salary/{newSalary}")]
+        public async Task<IActionResult> PutSalary(Guid id, int newSalary)
         {
-            var result = await _service.UpdateSalaryAsync(employee);
+            var result = await _service.UpdateSalaryAsync(id, newSalary);
 
             if (result.IsSuccess)
                 return Ok(result);

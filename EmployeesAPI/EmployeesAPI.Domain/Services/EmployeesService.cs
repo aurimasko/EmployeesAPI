@@ -24,6 +24,11 @@ namespace EmployeesAPI.Domain.Services
             return await _repository.GetAllAsync();
         }
 
+        public async Task<Response<Employee>> GetAsync(Guid id)
+        {
+            return await _repository.GetAsync(id);
+        }
+
         public async Task<Response<IEnumerable<Employee>>> GetByParameterAsync(Expression<Func<Employee, bool>> searchCriteria)
         {
             return await _repository.GetByParameterAsync(searchCriteria);
@@ -89,9 +94,20 @@ namespace EmployeesAPI.Domain.Services
             return await _repository.UpdateAsync(employee);
         }
 
-        public async Task<Response<Employee>> UpdateSalaryAsync(Employee employee)
+        public async Task<Response<Employee>> UpdateSalaryAsync(Guid id, int newSalary)
         {
-            return await _repository.UpdateSalaryAsync(employee);
+            var employee = await GetAsync(id);
+
+            if(!employee.IsSuccess)
+                return new Response<Employee>(employee.InnerException, employee.ErrorMessages, employee.ErrorCodes);
+
+            if(employee.Content == null)
+                return new Response<Employee>("This employees was not found!");
+
+
+            employee.Content.Salary = newSalary;
+
+            return await _repository.UpdateAsync(employee.Content);
         }
 
         public async Task<Response<Employee>> DeleteAsync(Guid id)
