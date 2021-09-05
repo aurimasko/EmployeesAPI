@@ -26,7 +26,7 @@ namespace EmployeesAPI.Infrastructure.Migrations
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("BossId")
+                    b.Property<Guid?>("BossId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("EmploymentDate")
@@ -63,9 +63,7 @@ namespace EmployeesAPI.Infrastructure.Migrations
                 {
                     b.HasOne("EmployeesAPI.Domain.Models.Employee", "Boss")
                         .WithMany()
-                        .HasForeignKey("BossId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BossId");
 
                     b.Navigation("Boss");
                 });

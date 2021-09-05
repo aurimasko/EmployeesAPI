@@ -3,7 +3,7 @@ namespace EmployeesAPI.Domain.Configuration
 {
     public enum RoleTypes
     {
-        Employee,
-        CEO
+        Employee = 1,
+        CEO = 2
     }
 }

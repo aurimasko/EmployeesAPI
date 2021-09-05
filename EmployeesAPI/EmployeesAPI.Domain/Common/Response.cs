@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using EmployeesAPI.Domain.Configuration;
 
 namespace EmployeesAPI.Domain.Common
@@ -13,7 +15,7 @@ namespace EmployeesAPI.Domain.Common
             ErrorCodes = new List<ErrorCodeTypes>();
         }
 
-        public Response(bool isSuccess)
+        public Response(bool isSuccess) : this()
         {
             IsSuccess = isSuccess;
         }
@@ -40,18 +42,34 @@ namespace EmployeesAPI.Domain.Common
             ErrorCodes.Add(ErrorCodeTypes.GenericError);
         }
 
+        public Response(Exception innerException, IEnumerable<string> errorMessages, IEnumerable<ErrorCodeTypes> errorCodesEnums) : this(errorMessages, errorCodesEnums)
+        {
+            InnerException = innerException;
+        }
+
+
         public bool IsSuccess { get; set; }
         public List<ErrorCodeTypes> ErrorCodes { get; set; }
         public List<string> ErrorMessages { get; set; }
 
+        [JsonIgnore]
+        public Exception InnerException { get; set; }
     }
 
     public class Response<T> : Response
     {
         public T Content { get; set; }
 
-        public Response() { }
+        public Response() : base () { }
         public Response(bool isSuccess) : base(isSuccess) { }
         public Response(T content) : base(true) { Content = content; }
+
+        public Response(string errorMessage) : base(errorMessage)
+        {
+        }
+
+        public Response(Exception innerException, IEnumerable<string> errorMessages, IEnumerable<ErrorCodeTypes> errorCodesEnums) : base(innerException, errorMessages, errorCodesEnums)
+        {
+        }
     }
 }
