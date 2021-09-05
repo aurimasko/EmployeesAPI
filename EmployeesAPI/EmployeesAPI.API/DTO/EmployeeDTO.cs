@@ -6,20 +6,16 @@ namespace EmployeesAPI.API.DTO
 {
     public class EmployeeDTO
     {
-        public EmployeeDTO()
-        {
-        }
-
         [Key]
         public Guid Id { get; set; }
 
         [Required]
         [StringLength(maximumLength: 50)]
-        public String FirstName { get; set; }
+        public string FirstName { get; set; }
 
         [Required]
         [StringLength(maximumLength: 50)]
-        public String LastName { get; set; }
+        public string LastName { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -30,7 +26,7 @@ namespace EmployeesAPI.API.DTO
         public DateTime EmploymentDate { get; set; }
 
         [Required]
-        public String HomeAddress { get; set; }
+        public string HomeAddress { get; set; }
 
         [Required]
         public int Salary { get; set; }

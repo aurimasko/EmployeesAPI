@@ -43,18 +43,6 @@ namespace EmployeesAPI
                     options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                 });
 
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAllRequests", builder =>
-                {
-                    builder
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-            });
-
             services.AddDbContext<EmployeesDbContext>(options =>
             {
                 string connectionString = Configuration.GetConnectionString("EmployeesDatabase");

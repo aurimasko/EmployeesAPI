@@ -68,6 +68,9 @@ namespace EmployeesAPI.Domain.Services
             if (!validator.IsSuccess)
                 return validator;
 
+            if (employee.RowVersion == null || (employee.RowVersion != null && employee.RowVersion.Length == 0))
+                return new Response<Employee>("RowVersion field is required.", ErrorCodeTypes.ValidationErrors);
+
             return await _repository.UpdateAsync(employee);
         }
 
@@ -97,7 +100,15 @@ namespace EmployeesAPI.Domain.Services
             if (employees.Content.Count() > 0)
                 return new Response<Employee>("This employee has at least one subordinate! Change boss for subordinatess first.");
 
-            return await _repository.DeleteAsync(id);
+            var employee = await _repository.GetAsync(id);
+
+            if (!employee.IsSuccess)
+                return new Response<Employee>(employee.InnerException, employee.ErrorMessages, employee.ErrorCodes);
+
+            if(employee.Content == null)
+                return new Response<Employee>("This employee was not found!", ErrorCodeTypes.NotFound);
+
+            return await _repository.DeleteAsync(employee.Content);
         }
 
         private async Task<Response<Employee>> Validate(Employee employee)

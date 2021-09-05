@@ -89,7 +89,7 @@ namespace EmployeesAPI.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]EmployeeDTO employee)
+        public async Task<IActionResult>  Post([FromBody]EmployeeDTO employee)
         {
             var mappedEmployee = _mapper.Map<Employee>(employee);
             var result = await _service.AddAsync(mappedEmployee);

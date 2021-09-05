@@ -8,10 +8,6 @@ namespace EmployeesAPI.Domain.Models
 {
     public class Employee
     {
-        public Employee()
-        {
-        }
-
         [Key]
         public Guid Id { get; set; }
 
