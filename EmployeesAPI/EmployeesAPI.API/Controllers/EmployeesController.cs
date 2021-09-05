@@ -95,7 +95,6 @@ namespace EmployeesAPI.API.Controllers
                 return BadRequest(result);
         }
 
-        // change employee to Id, Salary.
         [HttpPut("{id}/Salary/{newSalary}")]
         public async Task<IActionResult> PutSalary(Guid id, int newSalary)
         {
