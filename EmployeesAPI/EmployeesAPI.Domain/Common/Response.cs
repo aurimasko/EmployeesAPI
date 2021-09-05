@@ -7,8 +7,6 @@ namespace EmployeesAPI.Domain.Common
 {
     public class Response
     {
-
-
         protected Response()
         {
             ErrorMessages = new List<string>();
