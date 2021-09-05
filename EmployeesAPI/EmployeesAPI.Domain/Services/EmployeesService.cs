@@ -96,6 +96,13 @@ namespace EmployeesAPI.Domain.Services
 
         public async Task<Response<Employee>> DeleteAsync(Guid id)
         {
+            var employees = await _repository.GetByParameterAsync(e => e.BossId == id);
+
+            if(!employees.IsSuccess)
+                return new Response<Employee>(employees.InnerException, employees.ErrorMessages, employees.ErrorCodes);
+
+            if (employees.Content.Count() > 0)
+                return new Response<Employee>("This employee has at least one subordinate! Change boss for subordinatess first.");
 
             return await _repository.DeleteAsync(id);
         }

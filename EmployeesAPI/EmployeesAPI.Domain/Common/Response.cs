@@ -71,5 +71,9 @@ namespace EmployeesAPI.Domain.Common
         public Response(Exception innerException, IEnumerable<string> errorMessages, IEnumerable<ErrorCodeTypes> errorCodesEnums) : base(innerException, errorMessages, errorCodesEnums)
         {
         }
+
+        public Response(string errorMessage, ErrorCodeTypes errorCode) : base(errorMessage, errorCode)
+        {
+        }
     }
 }

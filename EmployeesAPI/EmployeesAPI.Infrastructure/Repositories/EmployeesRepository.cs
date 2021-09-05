@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EmployeesAPI.Domain.Common;
+using EmployeesAPI.Domain.Configuration;
 using EmployeesAPI.Domain.Interfaces;
 using EmployeesAPI.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -65,8 +66,20 @@ namespace EmployeesAPI.Infrastructure.Repositories
 
         public async Task<Response<Employee>> DeleteAsync(Guid id)
         {
-            return new Response<Employee>(await _context.Employees.FindAsync());
+            var entity = await _context.Employees.FindAsync(id);
 
+            if (entity == null)
+                return new Response<Employee>("This employee was not found!", ErrorCodeTypes.NotFound);
+
+            var deleted = _context.Employees.Remove(entity);
+
+            if (deleted.Entity == null)
+                return new Response<Employee>("This employee was not found!", ErrorCodeTypes.NotFound);
+
+            if (await _context.SaveChangesAsync() > 0)
+                return new Response<Employee>(deleted.Entity);
+
+            return new Response<Employee>("Failed to save deletion of employee " + id, ErrorCodeTypes.Exception);
         }
     }
 }
