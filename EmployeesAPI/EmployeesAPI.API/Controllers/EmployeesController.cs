@@ -29,7 +29,7 @@ namespace EmployeesAPI.API.Controllers
                 return BadRequest(result);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             var result = await _service.GetAsync(id);
@@ -40,7 +40,7 @@ namespace EmployeesAPI.API.Controllers
                 return BadRequest(result);
         }
 
-        [HttpGet]
+        [HttpGet("{name}")]
         public async Task<IActionResult> Get(String Name, DateTime birthDateFrom, DateTime birthDateTo)
         {
             var result = await _service.GetByParameterAsync();
@@ -52,7 +52,7 @@ namespace EmployeesAPI.API.Controllers
         }
 
         // change routing
-        [HttpGet]
+        [HttpGet("{bossId}")]
         public async Task<IActionResult> GetByBoss(Guid bossId)
         {
             var result = await _service.GetByParameterAsync();
@@ -64,7 +64,7 @@ namespace EmployeesAPI.API.Controllers
         }
 
         // not working yet
-        [HttpGet]
+        [HttpGet("{role}")]
         public async Task<IActionResult> GetCount(RoleTypes role)
         {
             var result = await _service.GetByParameterAsync();
@@ -98,7 +98,7 @@ namespace EmployeesAPI.API.Controllers
         }
 
         // change employee to Id, Salary.
-        [HttpPut]
+        [HttpPut("test/")]
         public async Task<IActionResult> PutSalary([FromBody]Employee employee)
         {
             var result = await _service.UpdateSalaryAsync(employee);

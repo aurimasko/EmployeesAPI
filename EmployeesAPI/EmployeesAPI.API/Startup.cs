@@ -12,6 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using EmployeesAPI.Infrastructure;
+using EmployeesAPI.Domain.Interfaces;
+using EmployeesAPI.Infrastructure.Repositories;
+using EmployeesAPI.Domain.Services;
 
 namespace EmployeesAPI
 {
@@ -38,6 +41,11 @@ namespace EmployeesAPI
                         settings.EnableRetryOnFailure();
                     }).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
+
+            services.AddSwaggerGen();
+
+            services.AddScoped<IEmployeesRepository, EmployeesRepository>();
+            services.AddScoped<IEmployeesService, EmployeesService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +66,9 @@ namespace EmployeesAPI
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", ""); });
         }
     }
 }
