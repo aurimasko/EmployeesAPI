@@ -41,9 +41,6 @@ namespace EmployeesAPI.Infrastructure.Repositories
         {
             var entity = await _context.Employees.AddAsync(employee);
 
-            if (entity.Entity == null)
-                return new Response<Employee>("New employee was not added.");
-           
             if (await _context.SaveChangesAsync() > 0)
                 return new Response<Employee>(entity.Entity);
 
@@ -56,9 +53,6 @@ namespace EmployeesAPI.Infrastructure.Repositories
 
             if (obj == null)
                 return new Response<Employee>("This employee was not found!", ErrorCodeTypes.NotFound);
-
-            if (employee.RowVersion == null || (employee.RowVersion != null && employee.RowVersion.Length == 0))
-                return new Response<Employee>("RowVersion field is required.", ErrorCodeTypes.ValidationErrors);
 
             _context.Entry(obj).Property("RowVersion").OriginalValue = employee.RowVersion;
 
@@ -90,22 +84,14 @@ namespace EmployeesAPI.Infrastructure.Repositories
             }
         }
 
-        public async Task<Response<Employee>> DeleteAsync(Guid id)
+        public async Task<Response<Employee>> DeleteAsync(Employee employee)
         {
-            var entity = await _context.Employees.FindAsync(id);
-
-            if (entity == null)
-                return new Response<Employee>("This employee was not found!", ErrorCodeTypes.NotFound);
-
-            var deleted = _context.Employees.Remove(entity);
-
-            if (deleted.Entity == null)
-                return new Response<Employee>("This employee was not found!", ErrorCodeTypes.NotFound);
+            var deleted = _context.Employees.Remove(employee);
 
             if (await _context.SaveChangesAsync() > 0)
                 return new Response<Employee>(deleted.Entity);
 
-            return new Response<Employee>("Failed to save deletion of employee " + id, ErrorCodeTypes.Exception);
+            return new Response<Employee>("Employee was not deleted", ErrorCodeTypes.Exception);
         }
     }
 }

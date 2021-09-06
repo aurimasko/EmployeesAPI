@@ -1,16 +1,14 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EmployeesAPI.Domain.Common;
 using EmployeesAPI.Domain.Configuration;
+using Newtonsoft.Json;
 
 namespace EmployeesAPI.Domain.Models
 {
     public class Employee
     {
-        public Employee()
-        {
-        }
-
         [Key]
         public Guid Id { get; set; }
 
@@ -40,6 +38,7 @@ namespace EmployeesAPI.Domain.Models
         public RoleTypes Role { get; set; }
 
         [ForeignKey("BossId")]
+        [JsonIgnore]
         public Employee Boss { get; set; }
 
         public Guid? BossId { get; set; }
