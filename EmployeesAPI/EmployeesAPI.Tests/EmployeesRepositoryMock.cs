@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using EmployeesAPI.Domain.Common;
 using EmployeesAPI.Domain.Configuration;
 using EmployeesAPI.Domain.Interfaces;
@@ -17,16 +18,15 @@ namespace EmployeesAPI.Tests
         public EmployeesRepositoryMock()
         {
             EmployeesList = new EmployeesList();
-            List<Employee> employeesList = new List<Employee>();
 
             Repository = new Mock<IEmployeesRepository>();
-            //   Repository.Setup(p => p.GetAsync(new Guid())).ReturnsAsync(new Response<Employee>(content: null));
-            //     Repository.Setup(x => x.GetAsync(It.IsAny<Guid>())).ReturnsAsync((Guid id) => new Response<Employee>(employeesList.Find(e => e.Id.Equals(id))));
             Repository.Setup(x => x.AddAsync(It.IsAny<Employee>())).ReturnsAsync((Employee emp) => AddEmployee(emp));
-            Repository.Setup(x => x.GetByParameterAsync(e => e.Role == RoleTypes.CEO && !e.Id.Equals(new Guid()))).ReturnsAsync(new Response<IEnumerable<Employee>>(employeesList.FindAll(e => e.Id.Equals(new Guid()))));
+            Repository.Setup(x => x.DeleteAsync(It.IsAny<Employee>())).ReturnsAsync((Employee emp) => DeleteEmployee(emp));
 
+            Repository.Setup(x => x.GetAsync(It.IsAny<Guid>())).ReturnsAsync((Guid id) => new Response<Employee>(EmployeesList.Employees.Find(e => e.Id.Equals(id))));
+
+            Repository.Setup(x => x.GetByParameterAsync(It.IsAny<Expression<Func<Employee, bool>>>())).ReturnsAsync((Expression<Func<Employee, bool>> criteria) => new Response<IEnumerable<Employee>>(EmployeesList.Employees.Where(criteria.Compile()).ToList()));
         }
-
 
         public Response<Employee> AddEmployee(Employee emp)
         {
@@ -34,18 +34,11 @@ namespace EmployeesAPI.Tests
             EmployeesList.Employees.Add(emp);
             return new Response<Employee>(emp);
         }
-        /*
-        public Response<Employee> AddAsync(Employee employee)
-        {
-            employee.Id = Guid.NewGuid();
-            EmployeesList.Employees.Add(employee);
-            return new Response<Employee>(employee);
-        }
 
-        public void DeleteAsync(Guid id)
+        public Response<Employee> DeleteEmployee(Employee emp)
         {
-            var existing = EmployeesList.Employees.First(a => a.Id == id);
-            EmployeesList.Employees.Remove(existing);
-        }*/
+            EmployeesList.Employees.Remove(emp);
+            return new Response<Employee>(emp);
+        }
     }
 }

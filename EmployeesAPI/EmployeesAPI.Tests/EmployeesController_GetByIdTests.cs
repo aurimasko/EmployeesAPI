@@ -3,36 +3,23 @@ using EmployeesAPI.API.Controllers;
 using EmployeesAPI.Domain.Interfaces;
 using Xunit;
 using Moq;
-using AutoMapper;
 using EmployeesAPI.Domain.Common;
 using EmployeesAPI.Domain.Models;
 using EmployeesAPI.API;
 using EmployeesAPI.Domain.Configuration;
 using Microsoft.AspNetCore.Mvc;
-using EmployeesAPI.API.DTO;
 
 namespace EmployeesAPI.Tests
 {
     public class EmployeesController_GetByIdTests
     {
         readonly EmployeesController _controller;
-        readonly IMapper _mapper;
 
         public EmployeesController_GetByIdTests()
         {
-            if (_mapper == null)
-            {
-                var mappingConfig = new MapperConfiguration(mc =>
-                {
-                    mc.AddProfile(new MappingProfile());
-                });
-                IMapper mapper = mappingConfig.CreateMapper();
-                _mapper = mapper;
-            }
-
+          
             EmployeesServiceMock _service = new EmployeesServiceMock();
-
-            _controller = new EmployeesController(_service.Service.Object, _mapper);
+            _controller = new EmployeesController(_service.Service.Object);
         }
 
         [Fact]
@@ -55,7 +42,7 @@ namespace EmployeesAPI.Tests
             var result = _controller.Get(employeeId).Result as OkObjectResult;
 
             // Assert
-            var employee = Assert.IsType<Response<EmployeeDTO>>(result.Value);
+            var employee = Assert.IsType<Response<Employee>>(result.Value);
             Assert.NotNull(employee.Content);
             Assert.Equal(employee.Content.Id, employeeId);
         }
@@ -70,7 +57,7 @@ namespace EmployeesAPI.Tests
             var result = _controller.Get(employeeId).Result as OkObjectResult;
 
             // Assert
-            var employee = Assert.IsType<Response<EmployeeDTO>>(result.Value);
+            var employee = Assert.IsType<Response<Employee>>(result.Value);
             Assert.Null(employee.Content);
         }
     }

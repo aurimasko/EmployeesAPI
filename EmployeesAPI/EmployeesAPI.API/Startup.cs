@@ -84,7 +84,6 @@ namespace EmployeesAPI
             });
 
             services.AddSwaggerGen();
-            services.AddAutoMapper(typeof(MappingProfile));
 
             services.AddScoped<IEmployeesRepository, EmployeesRepository>();
             services.AddScoped<IEmployeesService, EmployeesService>();

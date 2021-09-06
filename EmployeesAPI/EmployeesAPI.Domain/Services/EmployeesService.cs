@@ -34,6 +34,25 @@ namespace EmployeesAPI.Domain.Services
             return await _repository.GetByParameterAsync(searchCriteria);
         }
 
+
+        public async Task<Response<IEnumerable<Employee>>> GetByBossIdAsync(Guid bossId)
+        {
+            return await GetByParameterAsync(e => e.BossId == bossId);
+        }
+
+        public async Task<Response<IEnumerable<Employee>>> SearchAsync(string name, DateTime? birthdateFrom, DateTime? birthdateTo)
+        {
+            DateTime bdFrom = birthdateFrom ?? DateTime.MinValue;
+            DateTime bdTo = birthdateTo ?? DateTime.MaxValue;
+
+            var result = await GetByParameterAsync(e => (e.FirstName.Equals(name) || name == String.Empty) && e.BirthDate >= bdFrom.Date && e.BirthDate <= bdTo.Date);
+
+            if (!result.IsSuccess)
+                return new Response<IEnumerable<Employee>>(result.InnerException, result.ErrorMessages, result.ErrorCodes);
+
+            return result;
+        }
+
         public async Task<Response<EmployeesAnalysis>> GetStatisticsAsync(RoleTypes role)
         {
             var employees = await GetByParameterAsync(e => e.Role == role);

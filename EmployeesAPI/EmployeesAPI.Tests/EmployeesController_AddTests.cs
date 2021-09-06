@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AutoMapper;
-using EmployeesAPI.API;
-using EmployeesAPI.API.Controllers;
-using EmployeesAPI.API.DTO;
 using EmployeesAPI.Domain.Common;
 using EmployeesAPI.Domain.Configuration;
 using EmployeesAPI.Domain.Models;
@@ -16,22 +12,10 @@ namespace EmployeesAPI.Tests
     public class EmployeesController_AddTests
     {
         readonly EmployeesService _service;
-        readonly IMapper _mapper;
 
         public EmployeesController_AddTests()
         {
-            if (_mapper == null)
-            {
-                var mappingConfig = new MapperConfiguration(mc =>
-                {
-                    mc.AddProfile(new MappingProfile());
-                });
-                IMapper mapper = mappingConfig.CreateMapper();
-                _mapper = mapper;
-            }
-
             EmployeesRepositoryMock _repository = new EmployeesRepositoryMock();
-
             _service = new EmployeesService(_repository.Repository.Object);
         }
 
@@ -151,12 +135,15 @@ namespace EmployeesAPI.Tests
         [Fact]
         public void EmployeesController_AddEmployee_Returns_Success2()
         {
-            // Arrange
+            //Arrange
+            DateTime birthDate = DateTime.Today;
+            birthDate = birthDate.AddDays(1).AddYears(-71);
+
             Employee employee = new Employee()
             {
                 FirstName = "Edvard",
                 LastName = "Gome",
-                BirthDate = new DateTime(1950, 09, 06),
+                BirthDate = birthDate,
                 EmploymentDate = new DateTime(2010, 01, 01),
                 Salary = 7000,
                 Role = RoleTypes.Employee,

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using EmployeesAPI.Domain.Common;
 using EmployeesAPI.Domain.Configuration;
 using EmployeesAPI.Domain.Interfaces;

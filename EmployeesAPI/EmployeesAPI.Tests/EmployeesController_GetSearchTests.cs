@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoMapper;
 using EmployeesAPI.API;
 using EmployeesAPI.API.Controllers;
-using EmployeesAPI.API.DTO;
 using EmployeesAPI.Domain.Common;
+using EmployeesAPI.Domain.Models;
+using EmployeesAPI.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
@@ -13,24 +13,13 @@ namespace EmployeesAPI.Tests
 {
     public class EmployeesController_GetSearchTests
     {
-        /* EmployeesController _controller;
-         IMapper _mapper;
+         EmployeesController _controller;
 
          public EmployeesController_GetSearchTests()
          {
-             if (_mapper == null)
-             {
-                 var mappingConfig = new MapperConfiguration(mc =>
-                 {
-                     mc.AddProfile(new MappingProfile());
-                 });
-                 IMapper mapper = mappingConfig.CreateMapper();
-                 _mapper = mapper;
-             }
+             EmployeesRepositoryMock _repository = new EmployeesRepositoryMock();
 
-             EmployeesServiceMock _service = new EmployeesServiceMock();
-
-             _controller = new EmployeesController(_service.Service.Object, _mapper);
+             _controller = new EmployeesController(new EmployeesService(_repository.Repository.Object));
          }
 
          [Fact]
@@ -50,7 +39,7 @@ namespace EmployeesAPI.Tests
              var result = _controller.Get(name: "John", new DateTime(1980, 01, 01), new DateTime(2010, 01, 01)).Result as OkObjectResult;
 
              // Assert
-             var employee = Assert.IsType<Response<IEnumerable<EmployeeDTO>>>(result.Value);
+             var employee = Assert.IsType<Response<IEnumerable<Employee>>>(result.Value);
              Assert.NotNull(employee.Content);
              Assert.Equal(2, employee.Content.Count());
          }
@@ -62,7 +51,7 @@ namespace EmployeesAPI.Tests
              var result = _controller.Get(name: "John", new DateTime(1992, 01, 01), new DateTime(1992, 05, 01)).Result as OkObjectResult;
 
              // Assert
-             var employee = Assert.IsType<Response<IEnumerable<EmployeeDTO>>>(result.Value);
+             var employee = Assert.IsType<Response<IEnumerable<Employee>>>(result.Value);
              Assert.NotNull(employee.Content);
              Assert.Single(employee.Content);
          }
@@ -75,7 +64,7 @@ namespace EmployeesAPI.Tests
              var result = _controller.Get(name: "John", null, new DateTime(1992, 05, 01)).Result as OkObjectResult;
 
              // Assert
-             var employee = Assert.IsType<Response<IEnumerable<EmployeeDTO>>>(result.Value);
+             var employee = Assert.IsType<Response<IEnumerable<Employee>>>(result.Value);
              Assert.NotNull(employee.Content);
              Assert.Single(employee.Content);
          }
@@ -87,7 +76,7 @@ namespace EmployeesAPI.Tests
              var result = _controller.Get(name: "John", new DateTime(1992, 05, 01), null).Result as OkObjectResult;
 
              // Assert
-             var employee = Assert.IsType<Response<IEnumerable<EmployeeDTO>>>(result.Value);
+             var employee = Assert.IsType<Response<IEnumerable<Employee>>>(result.Value);
              Assert.NotNull(employee.Content);
              Assert.Equal(2, employee.Content.Count());
          }
@@ -99,10 +88,9 @@ namespace EmployeesAPI.Tests
              var result = _controller.Get(name: "John", null, null).Result as OkObjectResult;
 
              // Assert
-             var employee = Assert.IsType<Response<IEnumerable<EmployeeDTO>>>(result.Value);
+             var employee = Assert.IsType<Response<IEnumerable<Employee>>>(result.Value);
              Assert.NotNull(employee.Content);
              Assert.Equal(2, employee.Content.Count());
          }
-     }*/
-    }
+     }
 }
