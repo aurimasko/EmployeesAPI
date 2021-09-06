@@ -14,6 +14,6 @@ namespace EmployeesAPI.Domain.Interfaces
         Task<Response<IEnumerable<Employee>>> GetByParameterAsync(Expression<Func<Employee, bool>> searchCriteria);
         Task<Response<Employee>> AddAsync(Employee employee);
         Task<Response<Employee>> UpdateAsync(Employee employee);
-        Task<Response<Employee>> DeleteAsync(Guid id);
+        Task<Response<Employee>> DeleteAsync(Employee employee);
     }
 }
