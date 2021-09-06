@@ -17,7 +17,6 @@ using EmployeesAPI.Infrastructure.Repositories;
 using EmployeesAPI.Domain.Services;
 using EmployeesAPI.Infrastructure.Middlewares;
 using EmployeesAPI.Infrastructure.Logger;
-using AutoMapper;
 using EmployeesAPI.API;
 using EmployeesAPI.Domain.Common;
 using EmployeesAPI.Domain.Configuration;
